@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Liste des Étudiants</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: #f4f7ff;
+      color: #333;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .container {
+      background: #fff;
+      border-radius: 15px;
+      box-shadow: 0 12px 35px rgba(0, 0, 0, 0.1);
+      padding: 30px;
+      width: 100%;
+      max-width: 900px;
+      text-align: center;
+    }
+
+    h1 {
+      font-size: 2.5rem;
+      font-weight: 600;
+      color: #2f3640;
+      margin-bottom: 20px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    #loading {
+      font-size: 1.2rem;
+      font-weight: 500;
+      color: #8e8e8e;
+    }
+
+    #error {
+      display: none;
+      font-size: 1.2rem;
+      color: #ff4c4c;
+      font-weight: 600;
+      margin-top: 20px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 30px;
+      background-color: #ffffff;
+      border-radius: 10px;
+      transform: translateY(-100px);
+      animation: slideIn 0.6s ease-in-out forwards;
+    }
+
+    table th, table td {
+      padding: 14px;
+      font-size: 1.1rem;
+      text-align: left;
+      border: 1px solid #ddd;
+    }
+
+    table th {
+      background-color: #4e73df;
+      color: #fff;
+      border-radius: 10px;
+      text-transform: uppercase;
+    }
+
+    table td {
+      background-color: #f9fafb;
+      color: #333;
+    }
+
+    table tbody tr {
+      transition: background-color 0.3s, transform 0.3s;
+    }
+
+    table tbody tr:hover {
+      background-color: #f1f5fb;
+      transform: scale(1.03);
+    }
+
+    table tbody tr:nth-child(even) {
+      background-color: #fafbfc;
+    }
+
+    .footer {
+      font-size: 1rem;
+      color: #888;
+      margin-top: 30px;
+    }
+
+    @keyframes slideIn {
+      0% {
+        opacity: 0;
+        transform: translateY(100px);
+      }
+      100% {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @media (max-width: 768px) {
+      h1 {
+        font-size: 2rem;
+      }
+
+      table th, table td {
+        font-size: 0.95rem;
+      }
+    }
+
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h1>Liste des Étudiants</h1>
+
+    <div id="loading">Chargement des données...</div>
+
+    <div id="error"></div>
+
+    <table id="studentsTable" style="display: none;">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Nom</th>
+          <th>Prénom</th>
+          <th>Âge</th>
+          <th>Niveau Scolaire</th>
+        </tr>
+      </thead>
+      <tbody>
+      </tbody>
+    </table>
+
+    <div class="footer">
+      <p>&copy; 2024 Développé avec 💙 par [Mohamed Amine Benabdallah]</p>
+    </div>
+  </div>
+
+  <script>
+    async function fetchStudents() {
+      try {
+        const response = await fetch('http://localhost:3000/api/get-students');
+        if (!response.ok) {
+          throw new Error('Erreur lors de la récupération des données');
+        }
+        const students = await response.json();
+        document.getElementById('loading').style.display = 'none';
+        document.getElementById('studentsTable').style.display = 'table';
+        const tbody = document.querySelector('#studentsTable tbody');
+        tbody.innerHTML = '';
+        students.forEach(student => {
+          const tr = document.createElement('tr');
+          tr.innerHTML = `
+            <td>${student.id}</td>
+            <td>${student.nom}</td>
+            <td>${student.prenom}</td>
+            <td>${student.age}</td>
+            <td>${student.niveauScolaire}</td>
+          `;
+          tbody.appendChild(tr);
+        });
+      } catch (error) {
+        document.getElementById('loading').style.display = 'none';
+        document.getElementById('error').style.display = 'block';
+        document.getElementById('error').textContent = 'Erreur lors du chargement des étudiants : ' + error.message;
+        console.error('Erreur:', error);
+      }
+    }
+
+    fetchStudents();
+  </script>
+
+</body>
+</html>
